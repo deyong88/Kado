@@ -105,14 +105,22 @@ function initScratch(card,canvas){
     ctx.globalCompositeOperation="destination-out";
   }
   size();
-  const pos=e=>{const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};};
-  const scratch=p=>{ctx.beginPath();ctx.arc(p.x,p.y,22,0,7);ctx.fill();};
-  const check=()=>{const{width:w,height:h}=canvas;const d=ctx.getImageData(0,0,w,h).data;let clear=0,total=0;for(let i=3;i<d.length;i+=4){total++;if(d[i]===0)clear++;}if(clear/total>0.4)reveal();};
+  // grid virtual untuk lacak area tergosok (andal, tanpa baca piksel)
+  const GX=8,GY=10;const grid=new Uint8Array(GX*GY);let filled=0;
+  const pos=e=>{const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top,w:r.width,h:r.height};};
+  const scratch=p=>{
+    ctx.beginPath();ctx.arc(p.x,p.y,24,0,7);ctx.fill();
+    const gx=Math.floor(p.x/p.w*GX),gy=Math.floor(p.y/p.h*GY);
+    for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){
+      const x=gx+dx,y=gy+dy;if(x<0||y<0||x>=GX||y>=GY)continue;
+      const idx=y*GX+x;if(!grid[idx]){grid[idx]=1;filled++;}
+    }
+    if(filled/(GX*GY)>0.4)reveal();
+  };
   function reveal(){if(revealed)return;revealed=true;canvas.classList.add("done");card.classList.add("revealed");opened++;progressEl.textContent=`${opened} dari ${KADO.length} terbuka`;if(opened===KADO.length)finish();}
   const down=e=>{drawing=true;scratch(pos(e));e.preventDefault();};
-  let moves=0;
-  const move=e=>{if(!drawing)return;scratch(pos(e));moves++;if(moves%8===0)check();e.preventDefault();};
-  const up=()=>{if(!drawing)return;drawing=false;check();};
+  const move=e=>{if(!drawing)return;scratch(pos(e));e.preventDefault();};
+  const up=()=>{if(!drawing)return;drawing=false;};
   canvas.addEventListener("mousedown",down);canvas.addEventListener("mousemove",move);window.addEventListener("mouseup",up);
   canvas.addEventListener("touchstart",down,{passive:false});canvas.addEventListener("touchmove",move,{passive:false});canvas.addEventListener("touchend",up);
 }
