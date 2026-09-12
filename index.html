@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Untukmu, Sayang</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Nunito+Sans:wght@400;600;700&display=swap');
+  :root{--bg:#2a1620;--paper:#fbf3ee;--ink:#3a2028;--muted:#8a6b73;--gold:#c99a5b;--rose-deep:#a24560}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{font-family:'Nunito Sans',system-ui,sans-serif;color:var(--paper);background:radial-gradient(120% 90% at 50% -10%, #4a2635 0%, var(--bg) 55%, #1c0e15 100%);min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:28px 18px 48px;overflow-x:hidden}
+  .cover{max-width:520px;text-align:center;margin-top:6vh}
+  .eyebrow{font-family:'Fraunces',serif;font-style:italic;color:var(--gold);font-size:1.05rem;opacity:0;animation:rise .9s .1s forwards}
+  .cover h1{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(2.4rem,9vw,3.6rem);line-height:1.05;margin:.35em 0 .5em;color:var(--paper);opacity:0;animation:rise .9s .3s forwards}
+  .cover p{color:#e9d6cf;font-size:1.02rem;line-height:1.7;max-width:36ch;margin:0 auto;opacity:0;animation:rise .9s .55s forwards}
+  .start{margin-top:32px;border:none;cursor:pointer;font-family:'Nunito Sans';font-weight:700;font-size:1rem;color:#2a1620;background:linear-gradient(180deg,#f0c98d,var(--gold));padding:15px 30px;border-radius:100px;box-shadow:0 10px 30px -8px rgba(201,154,91,.6);opacity:0;animation:rise .9s .8s forwards;transition:transform .15s ease}
+  .start:active{transform:scale(.96)}
+  .stage{display:none;width:100%;max-width:560px;flex-direction:column;align-items:center}
+  .stage.on{display:flex;animation:fade .6s ease}
+  .head{text-align:center;margin:2px 0 22px}
+  .head .k{font-family:'Fraunces',serif;font-style:italic;color:var(--gold);font-size:1rem}
+  .head h2{font-family:'Fraunces',serif;font-weight:400;font-size:1.7rem;color:var(--paper);margin-top:2px}
+  .progress{color:#c9a9b0;font-size:.85rem;margin-top:8px}
+  .deck{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;width:100%}
+  .card{position:relative;aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:linear-gradient(155deg,var(--paper),#f2e2da);box-shadow:0 14px 34px -14px rgba(0,0,0,.55);isolation:isolate}
+  .prize{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px;color:var(--ink)}
+  .prize .word{font-family:'Fraunces',serif;font-weight:500;font-size:1.6rem;color:var(--rose-deep);line-height:1.1}
+  .prize .amount{font-size:.9rem;color:var(--muted);margin-top:10px;font-weight:700;font-family:'Nunito Sans'}
+  .scratch{position:absolute;inset:0;z-index:2;touch-action:none;cursor:grab}
+  .scratch.done{transition:opacity .5s ease;opacity:0;pointer-events:none}
+  .hint{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;pointer-events:none;color:#7a5a48;font-size:.8rem;font-weight:700;text-shadow:0 1px 0 rgba(255,255,255,.4)}
+  .card.revealed .hint{display:none}
+  .card.revealed{animation:pop .45s ease}
+  .total{margin-top:30px;width:100%;max-width:560px;text-align:center;background:linear-gradient(160deg,rgba(251,243,238,.07),rgba(251,243,238,.02));border:1px solid rgba(201,154,91,.35);border-radius:22px;padding:26px 22px;opacity:.35;transition:opacity .5s ease}
+  .total.ready{opacity:1}
+  .total .lbl{color:var(--gold);font-family:'Fraunces',serif;font-style:italic;font-size:1rem}
+  .total .val{font-family:'Fraunces',serif;font-size:2.6rem;color:var(--paper);margin:6px 0 2px;font-weight:500}
+  .total .sub{color:#d8bfc6;font-size:.9rem}
+  .final-note{display:none;margin-top:18px;color:#f0dcd4;font-size:1rem;line-height:1.7;font-family:'Fraunces',serif;font-style:italic}
+  .final-note.on{display:block;animation:rise .8s forwards}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.eyebrow,.cover h1,.cover p,.start{opacity:1}}
+</style>
+</head>
+<body>
+  <section class="cover" id="cover">
+    <div class="eyebrow">Selamat ulang tahun</div>
+    <h1>Untukmu,<br>cinta terbaikku</h1>
+    <p>Ada 6 kartu di sini. Gosok satu per satu pakai jarimu, nanti pesan kecilku muncul di baliknya. Pelan-pelan saja ya.</p>
+    <button class="start" id="start">Mulai gosok kartunya</button>
+  </section>
+  <section class="stage" id="stage">
+    <div class="head">
+      <div class="k">Kado gosok</div>
+      <h2>Gosok tiap kartunya</h2>
+      <div class="progress" id="progress">0 dari 0 terbuka</div>
+    </div>
+    <div class="deck" id="deck"></div>
+    <div class="total" id="total">
+      <div class="lbl">Total kado</div>
+      <div class="val" id="totalVal">Rp0</div>
+      <div class="sub" id="totalSub">Buka semua kartu untuk lihat totalnya</div>
+      <div class="final-note" id="finalNote"></div>
+    </div>
+  </section>
+<script>
+const KADO = [
+  { amount:10000,  word:"Selamat" },
+  { amount:10000,  word:"Ulang" },
+  { amount:10000,  word:"Tahun" },
+  { amount:10000,  word:"Istriku" },
+  { amount:10000,  word:"Tercinta" },
+  { amount:950000, word:"\u2764\uFE0F" },
+];
+const FINAL_LINE = "Uangnya aku kasih langsung ya, sayang. Ini cuma cara kecil biar hari ulang tahunmu terasa lebih spesial. Aku sayang kamu. \u2764\uFE0F";
+const rupiah = n => "Rp" + n.toLocaleString("id-ID");
+document.getElementById("finalNote").textContent = FINAL_LINE;
+const deck=document.getElementById("deck"),progressEl=document.getElementById("progress"),
+totalBox=document.getElementById("total"),totalVal=document.getElementById("totalVal"),
+totalSub=document.getElementById("totalSub"),finalNote=document.getElementById("finalNote");
+let opened=0;const grandTotal=KADO.reduce((s,k)=>s+k.amount,0);
+progressEl.textContent=`0 dari ${KADO.length} terbuka`;
+document.getElementById("start").addEventListener("click",()=>{
+  document.getElementById("cover").style.display="none";
+  document.getElementById("stage").classList.add("on");build();
+});
+function build(){
+  KADO.forEach((k,i)=>{
+    const card=document.createElement("div");card.className="card";
+    card.innerHTML=`<div class="prize"><div class="word">${k.word}</div><div class="amount">${rupiah(k.amount)}</div></div><div class="hint">\u2726 gosok di sini \u2726</div><canvas class="scratch"></canvas>`;
+    deck.appendChild(card);initScratch(card,card.querySelector(".scratch"));
+  });
+}
+function initScratch(card,canvas){
+  const ctx=canvas.getContext("2d");let revealed=false,drawing=false;
+  function size(){
+    const r=card.getBoundingClientRect();canvas.width=r.width;canvas.height=r.height;
+    const g=ctx.createLinearGradient(0,0,r.width,r.height);g.addColorStop(0,"#c9617a");g.addColorStop(1,"#a24560");
+    ctx.fillStyle=g;ctx.fillRect(0,0,r.width,r.height);
+    ctx.fillStyle="rgba(255,255,255,.28)";
+    for(let i=0;i<40;i++){ctx.beginPath();ctx.arc(Math.random()*r.width,Math.random()*r.height,Math.random()*2,0,7);ctx.fill();}
+    ctx.globalCompositeOperation="destination-out";
+  }
+  size();
+  const pos=e=>{const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};};
+  const scratch=p=>{ctx.beginPath();ctx.arc(p.x,p.y,22,0,7);ctx.fill();};
+  const check=()=>{const{width:w,height:h}=canvas;const d=ctx.getImageData(0,0,w,h).data;let clear=0;for(let i=3;i<d.length;i+=40)if(d[i]===0)clear++;if(clear/(d.length/40)>0.5)reveal();};
+  function reveal(){if(revealed)return;revealed=true;canvas.classList.add("done");card.classList.add("revealed");opened++;progressEl.textContent=`${opened} dari ${KADO.length} terbuka`;if(opened===KADO.length)finish();}
+  const down=e=>{drawing=true;scratch(pos(e));e.preventDefault();};
+  const move=e=>{if(!drawing)return;scratch(pos(e));e.preventDefault();};
+  const up=()=>{if(!drawing)return;drawing=false;check();};
+  canvas.addEventListener("mousedown",down);canvas.addEventListener("mousemove",move);window.addEventListener("mouseup",up);
+  canvas.addEventListener("touchstart",down,{passive:false});canvas.addEventListener("touchmove",move,{passive:false});canvas.addEventListener("touchend",up);
+}
+function finish(){
+  totalBox.classList.add("ready");totalSub.textContent="Semua kartu sudah terbuka \uD83C\uDF89";finalNote.classList.add("on");
+  let cur=0;const step=Math.ceil(grandTotal/40);
+  const tick=setInterval(()=>{cur+=step;if(cur>=grandTotal){cur=grandTotal;clearInterval(tick);}totalVal.textContent=rupiah(cur);},28);
+}
+</script>
+</body>
+</html>
